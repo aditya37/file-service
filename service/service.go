@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 
+	db "github.com/aditya37/file-service/repository"
 	repo_storage "github.com/aditya37/file-service/repository/firebase"
 )
 
@@ -11,8 +12,9 @@ type FileService interface {
 }
 type service struct {
 	storage repo_storage.FirebaseStorage
+	db      db.DBReadWriter
 }
 
-func NewFileService(storage repo_storage.FirebaseStorage) (FileService, error) {
-	return &service{storage: storage}, nil
+func NewFileService(storage repo_storage.FirebaseStorage, db db.DBReadWriter) (FileService, error) {
+	return &service{storage: storage, db: db}, nil
 }
