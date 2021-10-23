@@ -14,6 +14,13 @@ services:
           - FIREBASE_CRED_FILE_PATH=firebase-admin-key.json
           - FIREBASE_PROJECT_ID=upload-service-329303
           - SERVICE_PORT=4444
+          - MYSQL_DBHOST=37.44.244.196
+          - MYSQL_DBPORT=3306
+          - MYSQL_DBUSER= root
+          - MYSQL_DBPASSWORD= lym0us1n
+          - MYSQL_DBNAME=db_file_service
+          - MYSQL_MAX_CONNECTION=1
+          - MYSQL_MAX_IDLE_CONNECTION=1
       dns:
           - 8.8.8.8
           - 8.8.4.4

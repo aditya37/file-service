@@ -49,4 +49,10 @@ type (
 		Filename   string
 		File       multipart.File
 	}
+	// Menampung data ke map upload type
+	UploadType struct {
+		Id           int64
+		ObjectPrefix string
+		UploadType   string
+	}
 )

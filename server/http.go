@@ -10,6 +10,7 @@ import (
 
 	"github.com/aditya37/file-service/endpoint"
 	firebase_repo "github.com/aditya37/file-service/repository/firebase"
+	mysql_repo "github.com/aditya37/file-service/repository/mysql"
 	"github.com/aditya37/file-service/service"
 	env "github.com/aditya37/get-env"
 	kithttp "github.com/go-kit/kit/transport/http"
@@ -42,8 +43,22 @@ func NewHttpServer() (Http, error) {
 		return nil, err
 	}
 
+	// mysql repo
+	db, err := mysql_repo.NewMysqlDataSource(mysql_repo.MysqlConfig{
+		Host:              env.GetString("MYSQL_DBHOST", "localhost"),
+		Port:              env.GetInt("MYSQL_DBPORT", 3306),
+		Name:              env.GetString("MYSQL_DBNAME", "db_file_service"),
+		User:              env.GetString("MYSQL_DBUSER", "root"),
+		Password:          env.GetString("MYSQL_DBPASSWORD", "lym0us1n"),
+		MaxConnection:     env.GetInt("MYSQL_MAX_CONNECTION", 10),
+		MaxIdleConnection: env.GetInt("MYSQL_MAX_IDLE_CONNECTION", 10),
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	// service layer
-	srv, err := service.NewFileService(firebaseRepo)
+	srv, err := service.NewFileService(firebaseRepo, db)
 	if err != nil {
 		return nil, err
 	}
