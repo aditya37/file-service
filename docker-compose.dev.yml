@@ -13,7 +13,7 @@ services:
           - FIREBASE_BUCKET_NAME=upload-service-329303.appspot.com
           - FIREBASE_CRED_FILE_PATH=firebase-admin-key.json
           - FIREBASE_PROJECT_ID=upload-service-329303
-          - SERVICE_PORT= 4444
+          - SERVICE_PORT=4444
       dns:
           - 8.8.8.8
           - 8.8.4.4
