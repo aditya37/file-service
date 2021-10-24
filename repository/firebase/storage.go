@@ -16,6 +16,7 @@ type (
 	FirebaseStorage interface {
 		Upload(ctx context.Context, filetPath, objectName string) (string, error)
 		GetObjectAttribute(ctx context.Context, objectName string) (*gcp.ObjectAttrs, error)
+		GetObject(ctx context.Context, objectName string) (*gcp.ObjectAttrs, error)
 	}
 )
 
@@ -72,6 +73,14 @@ func (g *firebaseStorage) Upload(ctx context.Context, filetPath, objectName stri
 }
 
 func (g *firebaseStorage) GetObjectAttribute(ctx context.Context, objectName string) (*gcp.ObjectAttrs, error) {
+	obj, err := g.bucket.Object(objectName).Attrs(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return obj, nil
+}
+
+func (g *firebaseStorage) GetObject(ctx context.Context, objectName string) (*gcp.ObjectAttrs, error) {
 	obj, err := g.bucket.Object(objectName).Attrs(ctx)
 	if err != nil {
 		return nil, err

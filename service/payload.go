@@ -1,6 +1,9 @@
 package service
 
-import "mime/multipart"
+import (
+	"mime/multipart"
+	"time"
+)
 
 // Constant for custom error code
 
@@ -54,5 +57,24 @@ type (
 		Id           int64
 		ObjectPrefix string
 		UploadType   string
+	}
+
+	// Get File Response
+	Metadata struct {
+		MediaLink   string `json:"media_link,omitempty"`
+		FileSize    int64  `json:"file_size,omitempty"`
+		ContentType string `json:"content_type,omitempty"`
+	}
+	FileItems struct {
+		Id           int64     `json:"id,omitempty"`
+		CreatedAt    time.Time `json:"created_at,omitempty"`
+		IsDeleted    int       `json:"is_deleted,omitempty"`
+		UploadType   string    `json:"upload_type,omitempty"`
+		ObjectPrefix string    `json:"object_prefix,omitempty"`
+		Metadata     Metadata  `json:"meta_data,omitempty"`
+	}
+	GetFilesResponse struct {
+		Count     int64        `json:"count,omitempty"`
+		FileItems []*FileItems `json:"file_items,omitempty"`
 	}
 )

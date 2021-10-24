@@ -53,3 +53,7 @@ func decodeRequestFileUpload(ctx context.Context, request *http.Request) (interf
 	}
 	return req, nil
 }
+
+func decodeRequestUploadedFile(ctx context.Context, request *http.Request) (interface{}, error) {
+	return request, nil
+}
