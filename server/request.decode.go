@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/aditya37/file-service/service"
+	"github.com/gorilla/mux"
 )
 
 func getContentType(source multipart.File) (string, error) {
@@ -75,5 +76,18 @@ func decodeRequestUploadedFile(ctx context.Context, request *http.Request) (inte
 	return service.GetFileRequest{
 		Page:        page,
 		ItemPerPage: itemPerPage,
+	}, nil
+}
+
+func decodeDetailFileRequest(ctx context.Context, request *http.Request) (interface{}, error) {
+
+	params := mux.Vars(request)
+	object, ok := params["object"]
+	if !ok {
+		return nil, errors.New("Object not found")
+	}
+
+	return service.DetailFileRequest{
+		ObjectName: object,
 	}, nil
 }

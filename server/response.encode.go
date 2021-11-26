@@ -18,3 +18,7 @@ func encodeFileUploadResponse(ctx context.Context, w http.ResponseWriter, respon
 func encodeUploadedFileResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	return json.NewEncoder(w).Encode(response)
 }
+
+func encodeDetailFile(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+	return json.NewEncoder(w).Encode(response)
+}

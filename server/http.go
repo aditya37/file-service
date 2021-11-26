@@ -24,6 +24,7 @@ type Http interface {
 type httpServer struct {
 	fileUploadTransport *kithttp.Server
 	getUploadedFiles    *kithttp.Server
+	detailFile          *kithttp.Server
 }
 
 func NewHttpServer() (Http, error) {
@@ -69,11 +70,21 @@ func NewHttpServer() (Http, error) {
 	}
 	e := endpoint.NewFileServiceEndpoint(srv)
 	return &httpServer{
-		fileUploadTransport: kithttp.NewServer(e.FileUploadEndpoint, decodeRequestFileUpload, encodeFileUploadResponse, opts...),
+		fileUploadTransport: kithttp.NewServer(
+			e.FileUploadEndpoint,
+			decodeRequestFileUpload,
+			encodeFileUploadResponse,
+			opts...),
 		getUploadedFiles: kithttp.NewServer(
 			e.UploadedFilesEndpoint,
 			decodeRequestUploadedFile,
 			encodeUploadedFileResponse,
+			opts...,
+		),
+		detailFile: kithttp.NewServer(
+			e.DetailFile,
+			decodeDetailFileRequest,
+			encodeDetailFile,
 			opts...,
 		),
 	}, nil
@@ -89,6 +100,7 @@ func (g *httpServer) muxHandler() http.Handler {
 	})
 	m.Methods(http.MethodPost).Path("/file/upload").Handler(g.fileUploadTransport)
 	m.Methods(http.MethodGet).Path("/files").Handler(g.getUploadedFiles)
+	m.Methods(http.MethodGet).Path("/file/{object}").Handler(g.detailFile)
 	return m
 }
 

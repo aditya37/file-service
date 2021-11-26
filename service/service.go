@@ -10,6 +10,7 @@ import (
 type FileService interface {
 	FileUpload(ctx context.Context, request FileUploadRequest) (FileUploadResponse, error)
 	GetFiles(ctx context.Context, request GetFileRequest) (GetFilesResponse, error)
+	DetailFile(ctx context.Context, request DetailFileRequest) (DetailFileResponse, error)
 }
 type service struct {
 	storage repo_storage.FirebaseStorage

@@ -72,6 +72,7 @@ func (g *firebaseStorage) Upload(ctx context.Context, filetPath, objectName stri
 	return writeBucket.Name, nil
 }
 
+// TODO: Remove ambigous method
 func (g *firebaseStorage) GetObjectAttribute(ctx context.Context, objectName string) (*gcp.ObjectAttrs, error) {
 	obj, err := g.bucket.Object(objectName).Attrs(ctx)
 	if err != nil {
