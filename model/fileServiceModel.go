@@ -28,4 +28,8 @@ type (
 		CreatedAt    time.Time `json:"created_at,omitempty"`
 		ModiedfAt    time.Time `json:"modified_at,omitempty"`
 	}
+	RequestGetUploadedFiles struct {
+		Page        int
+		ItemPerPage int
+	}
 )

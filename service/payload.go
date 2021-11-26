@@ -60,6 +60,10 @@ type (
 	}
 
 	// Get File Response
+	GetFileRequest struct {
+		Page        int `json:"page,omitempty"`
+		ItemPerPage int `json:"item_per_page,omitempty"`
+	}
 	Metadata struct {
 		MediaLink   string `json:"media_link,omitempty"`
 		FileSize    int64  `json:"file_size,omitempty"`

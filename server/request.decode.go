@@ -2,8 +2,10 @@ package server
 
 import (
 	"context"
+	"errors"
 	"mime/multipart"
 	"net/http"
+	"strconv"
 
 	"github.com/aditya37/file-service/service"
 )
@@ -55,5 +57,23 @@ func decodeRequestFileUpload(ctx context.Context, request *http.Request) (interf
 }
 
 func decodeRequestUploadedFile(ctx context.Context, request *http.Request) (interface{}, error) {
-	return request, nil
+	request.URL.Query().Add("page", "")
+	request.URL.Query().Add("itemPerPage", "")
+
+	queryPage, available := request.URL.Query()["page"]
+	if !available {
+		return nil, errors.New("Please add page in request")
+	}
+	queryItemPerPage, available := request.URL.Query()["itemPerPage"]
+	if !available {
+		return nil, errors.New("Please add item perpage in request")
+	}
+
+	page, _ := strconv.Atoi(queryPage[0])
+	itemPerPage, _ := strconv.Atoi(queryItemPerPage[0])
+
+	return service.GetFileRequest{
+		Page:        page,
+		ItemPerPage: itemPerPage,
+	}, nil
 }
