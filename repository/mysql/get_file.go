@@ -6,8 +6,13 @@ import (
 	"github.com/aditya37/file-service/model"
 )
 
-func (m *mysql) GetUploadedFiles(ctx context.Context) ([]*model.ResultUploadedFiles, error) {
-	rows, err := m.db.QueryContext(ctx, mysqlGetUploadedFile)
+func (m *mysql) GetUploadedFiles(ctx context.Context, data model.RequestGetUploadedFiles) ([]*model.ResultUploadedFiles, error) {
+	offset := (data.Page - 1) * data.ItemPerPage
+	args := []interface{}{
+		offset,
+		data.ItemPerPage,
+	}
+	rows, err := m.db.QueryContext(ctx, mysqlGetUploadedFile, args...)
 	if err != nil {
 		return nil, err
 	}

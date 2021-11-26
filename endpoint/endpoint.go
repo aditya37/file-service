@@ -40,7 +40,8 @@ func MakeFileUploadEndpoint(srv service.FileService) endpoint.Endpoint {
 
 func MakeUploadedFilesEndpoint(srv service.FileService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		resp, err := srv.GetFiles(ctx)
+		req := request.(service.GetFileRequest)
+		resp, err := srv.GetFiles(ctx, req)
 		if err != nil {
 			return nil, err
 		}
