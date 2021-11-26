@@ -12,6 +12,7 @@ const (
 	// dynamic error code
 	// error code for wrong request
 	ErrCodeWrongRequest = 101
+	ErrCodeDataNotFound = 404
 
 	// Static use error code
 	ErrCodeWrongFileFormat      = 002
@@ -80,5 +81,16 @@ type (
 	GetFilesResponse struct {
 		Count     int64        `json:"count,omitempty"`
 		FileItems []*FileItems `json:"file_items,omitempty"`
+	}
+
+	// /file/{object}
+	DetailFileRequest struct {
+		ObjectName string `json:"object_name,omitempty"`
+	}
+	DetailFileResponse struct {
+		Id        int64     `json:"id,omitempty"`
+		CreatedAt time.Time `json:"created_at,omitempty"`
+		Object    string    `json:"object,omitempty"`
+		Metadata  Metadata  `json:"meta_data,omitempty"`
 	}
 )

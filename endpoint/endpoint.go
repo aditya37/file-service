@@ -10,6 +10,7 @@ import (
 type FileServiceEndpoint struct {
 	FileUploadEndpoint    endpoint.Endpoint
 	UploadedFilesEndpoint endpoint.Endpoint
+	DetailFile            endpoint.Endpoint
 }
 
 func NewFileServiceEndpoint(srv service.FileService) FileServiceEndpoint {
@@ -21,9 +22,14 @@ func NewFileServiceEndpoint(srv service.FileService) FileServiceEndpoint {
 	{
 		uploadedFilesEndpoint = MakeUploadedFilesEndpoint(srv)
 	}
+	var detailFile endpoint.Endpoint
+	{
+		detailFile = MakeDetailFile(srv)
+	}
 	return FileServiceEndpoint{
 		FileUploadEndpoint:    fileUploadEndpoint,
 		UploadedFilesEndpoint: uploadedFilesEndpoint,
+		DetailFile:            detailFile,
 	}
 }
 
@@ -42,6 +48,17 @@ func MakeUploadedFilesEndpoint(srv service.FileService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(service.GetFileRequest)
 		resp, err := srv.GetFiles(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return resp, nil
+	}
+}
+
+func MakeDetailFile(srv service.FileService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(service.DetailFileRequest)
+		resp, err := srv.DetailFile(ctx, req)
 		if err != nil {
 			return nil, err
 		}

@@ -45,6 +45,9 @@ func encodeError(_ context.Context, err error, w http.ResponseWriter) {
 		case service.ErrCodeWrongRequest:
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(e)
+		case service.ErrCodeDataNotFound:
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(e)
 		default:
 			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(utils.CustomError{
