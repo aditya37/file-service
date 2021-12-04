@@ -17,6 +17,7 @@ type (
 		Upload(ctx context.Context, filetPath, objectName string) (string, error)
 		GetObjectAttribute(ctx context.Context, objectName string) (*gcp.ObjectAttrs, error)
 		GetObject(ctx context.Context, objectName string) (*gcp.ObjectAttrs, error)
+		DeleteObject(ctx context.Context, objectName string) error
 	}
 )
 
@@ -87,4 +88,8 @@ func (g *firebaseStorage) GetObject(ctx context.Context, objectName string) (*gc
 		return nil, err
 	}
 	return obj, nil
+}
+
+func (g *firebaseStorage) DeleteObject(ctx context.Context, objectName string) error {
+	return g.bucket.Object(objectName).Delete(ctx)
 }

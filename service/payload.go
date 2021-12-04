@@ -93,4 +93,13 @@ type (
 		Object    string    `json:"object,omitempty"`
 		Metadata  Metadata  `json:"meta_data,omitempty"`
 	}
+
+	// DELETE
+	// /file/{obj}
+	DeleteFileRequest struct {
+		ObjectName string `json:"object_name,omitempty"`
+	}
+	DeleteFileResponse struct {
+		Message string `json:"message,omitempty"`
+	}
 )

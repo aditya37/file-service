@@ -25,6 +25,8 @@ type httpServer struct {
 	fileUploadTransport *kithttp.Server
 	getUploadedFiles    *kithttp.Server
 	detailFile          *kithttp.Server
+	deleteFile          *kithttp.Server
+	Close               func()
 }
 
 func NewHttpServer() (Http, error) {
@@ -87,6 +89,15 @@ func NewHttpServer() (Http, error) {
 			encodeDetailFile,
 			opts...,
 		),
+		deleteFile: kithttp.NewServer(
+			e.DeleteFile,
+			decodeDeleteFileRequest,
+			encodeDeleteFileResponse,
+			opts...,
+		),
+		Close: func() {
+			db.Close()
+		},
 	}, nil
 }
 
@@ -101,22 +112,12 @@ func (g *httpServer) muxHandler() http.Handler {
 	m.Methods(http.MethodPost).Path("/file/upload").Handler(g.fileUploadTransport)
 	m.Methods(http.MethodGet).Path("/files").Handler(g.getUploadedFiles)
 	m.Methods(http.MethodGet).Path("/file/{object}").Handler(g.detailFile)
+	m.Methods(http.MethodDelete).Path("/file/{object}").Handler(g.deleteFile)
 	return m
 }
 
 func (h *httpServer) Start() {
 	errChan := make(chan error)
-	// os signal
-	go func() {
-		chanSignal := make(chan os.Signal)
-		signal.Notify(
-			chanSignal,
-			syscall.SIGINT,
-			syscall.SIGALRM,
-			syscall.SIGTERM,
-		)
-		errChan <- fmt.Errorf("%s", <-chanSignal)
-	}()
 	port := fmt.Sprintf(":%s", env.GetString("SERVICE_PORT", "4444"))
 	go func() {
 		serve := &http.Server{
@@ -128,6 +129,17 @@ func (h *httpServer) Start() {
 			errChan <- err
 		}
 	}()
-
+	// os signal
+	go func() {
+		chanSignal := make(chan os.Signal)
+		signal.Notify(
+			chanSignal,
+			syscall.SIGINT,
+			syscall.SIGALRM,
+			syscall.SIGTERM,
+		)
+		errChan <- fmt.Errorf("%s", <-chanSignal)
+	}()
+	defer h.Close()
 	log.Fatalf("Stop server with error detail: %v", <-errChan)
 }

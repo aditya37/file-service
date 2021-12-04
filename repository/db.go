@@ -13,4 +13,5 @@ type DBReadWriter interface {
 	GetUploadType(ctx context.Context) ([]*model.MstUploadType, error)
 	GetUploadedFiles(ctx context.Context, data model.RequestGetUploadedFiles) ([]*model.ResultUploadedFiles, error)
 	GetDetailFile(ctx context.Context, object string) (*model.MstFile, error)
+	DeleteUploadedFile(ctx context.Context, obj string) error
 }
