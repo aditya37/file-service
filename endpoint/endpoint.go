@@ -11,6 +11,7 @@ type FileServiceEndpoint struct {
 	FileUploadEndpoint    endpoint.Endpoint
 	UploadedFilesEndpoint endpoint.Endpoint
 	DetailFile            endpoint.Endpoint
+	DeleteFile            endpoint.Endpoint
 }
 
 func NewFileServiceEndpoint(srv service.FileService) FileServiceEndpoint {
@@ -26,10 +27,15 @@ func NewFileServiceEndpoint(srv service.FileService) FileServiceEndpoint {
 	{
 		detailFile = MakeDetailFile(srv)
 	}
+	var deleteFile endpoint.Endpoint
+	{
+		deleteFile = MakeDeleteFile(srv)
+	}
 	return FileServiceEndpoint{
 		FileUploadEndpoint:    fileUploadEndpoint,
 		UploadedFilesEndpoint: uploadedFilesEndpoint,
 		DetailFile:            detailFile,
+		DeleteFile:            deleteFile,
 	}
 }
 
@@ -59,6 +65,17 @@ func MakeDetailFile(srv service.FileService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(service.DetailFileRequest)
 		resp, err := srv.DetailFile(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return resp, nil
+	}
+}
+
+func MakeDeleteFile(srv service.FileService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(service.DeleteFileRequest)
+		resp, err := srv.DeleteFile(ctx, req)
 		if err != nil {
 			return nil, err
 		}

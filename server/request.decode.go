@@ -91,3 +91,15 @@ func decodeDetailFileRequest(ctx context.Context, request *http.Request) (interf
 		ObjectName: object,
 	}, nil
 }
+
+func decodeDeleteFileRequest(ctx context.Context, request *http.Request) (interface{}, error) {
+	params := mux.Vars(request)
+	object, ok := params["object"]
+	if !ok {
+		return nil, errors.New("Object not found")
+	}
+
+	return service.DeleteFileRequest{
+		ObjectName: object,
+	}, nil
+}
