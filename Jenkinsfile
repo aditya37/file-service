@@ -23,16 +23,6 @@ pipeline{
                 checkout scm
             }
         }
-        // prepare get credential file
-        stage('Prepare') {
-            steps {
-                // get credential file
-                withCredentials([file(credentialsId: 'b067d4c8-d147-4732-8725-cb84c520759b', variable: 'sa')]) {
-                    sh "cp $sa firebase-admin-key.json"
-                    sh "chmod 644 firebase-admin-key.json"
-                }
-            }
-        }
         stage('Build and deploy') {
             environment {
                 GOPATH = "${env.JENKINS_HOME}/workspace/${env.BRANCH_NAME}"
@@ -48,10 +38,14 @@ pipeline{
                         NAMESPACE = 'core-development'
                     }
                     steps {
-                        echo 'Build image'
-                        sh 'chmod +x build.sh'
-                        sh './build.sh default'
-                        sh 'rm firebase-admin-key.json'
+                        // get credential file
+                        withCredentials([file(credentialsId: 'b067d4c8-d147-4732-8725-cb84c520759b', variable: 'sa')]) {
+                            echo 'Build image'
+                            sh "cp $sa firebase-admin-key.json"
+                            sh "chmod 644 firebase-admin-key.json"
+                            sh 'chmod +x build.sh'
+                            sh './build.sh default'
+                        }
                     }
                 }
             }

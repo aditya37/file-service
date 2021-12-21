@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/aditya37/file-service/model"
 	"github.com/aditya37/file-service/utils"
 	"github.com/google/uuid"
 )
@@ -55,7 +56,7 @@ func (f *service) generateObjectName(uploadType string) string {
 	// unix object name
 	uuid := uuid.New()
 	timeStamp := time.Now().Unix()
-	return fmt.Sprintf("%s.%s.%d", uploadType, uuid, timeStamp)
+	return fmt.Sprintf("%s%s.%d", uploadType, uuid, timeStamp)
 }
 
 // firebase handling
@@ -91,15 +92,41 @@ func (f *service) firebaseHandling(ctx context.Context, file multipart.File, fil
 
 // process Upload photoProfile
 func (f *service) processUpload(ctx context.Context, req ProcessUpload) (FileUploadResponse, error) {
-	generatedObj := f.generateObjectName(req.UploadType)
+
+	uploadTypes, err := f.db.GetUploadType(ctx)
+	if err != nil {
+		return FileUploadResponse{}, err
+	}
+
+	mapObjPrfx := make(map[string]UploadType, 0)
+	for _, val := range uploadTypes {
+		mapObjPrfx[val.UploadType] = UploadType{
+			Id:           val.ID,
+			ObjectPrefix: val.ObjectPrefix,
+			UploadType:   val.UploadType,
+		}
+	}
+	uploadType, ok := mapObjPrfx[req.UploadType]
+	if !ok {
+		return FileUploadResponse{}, nil
+	}
+	generatedObj := f.generateObjectName(uploadType.ObjectPrefix)
 
 	size, obj, medialink, err := f.firebaseHandling(ctx, req.File, req.Filename, generatedObj)
 	if err != nil {
 		return FileUploadResponse{}, err
 	}
-
+	// save to db
+	id, err := f.db.SaveFileInfo(ctx, model.MstFile{
+		ObjectName: obj,
+		IsDeleted:  0,
+		UploadType: uploadType.Id,
+	})
+	if err != nil {
+		return FileUploadResponse{}, err
+	}
 	return FileUploadResponse{
-		Id:         0,
+		Id:         id,
 		MediaLink:  medialink,
 		ObjectName: obj,
 		FileSize:   size,
@@ -122,7 +149,7 @@ func (f *service) FileUpload(ctx context.Context, request FileUploadRequest) (Fi
 		// handle upload photo profile
 		resp, err := f.processUpload(ctx, ProcessUpload{
 			FileType:   request.FileDetail.ContentType,
-			UploadType: "photo.profile",
+			UploadType: UploadTypePhotoProfile,
 			Filename:   request.FileDetail.FileName,
 			File:       request.FileDetail.File,
 		})
@@ -142,7 +169,7 @@ func (f *service) FileUpload(ctx context.Context, request FileUploadRequest) (Fi
 		// handle upload photo content
 		resp, err := f.processUpload(ctx, ProcessUpload{
 			FileType:   request.FileDetail.ContentType,
-			UploadType: "photo.content",
+			UploadType: UploadTypeContent,
 			Filename:   request.FileDetail.FileName,
 			File:       request.FileDetail.File,
 		})
@@ -160,7 +187,7 @@ func (f *service) FileUpload(ctx context.Context, request FileUploadRequest) (Fi
 		}
 		resp, err := f.processUpload(ctx, ProcessUpload{
 			FileType:   request.FileDetail.ContentType,
-			UploadType: "document",
+			UploadType: UploadTypeDocument,
 			Filename:   request.FileDetail.FileName,
 			File:       request.FileDetail.File,
 		})

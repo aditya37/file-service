@@ -16,6 +16,8 @@ type (
 	FirebaseStorage interface {
 		Upload(ctx context.Context, filetPath, objectName string) (string, error)
 		GetObjectAttribute(ctx context.Context, objectName string) (*gcp.ObjectAttrs, error)
+		GetObject(ctx context.Context, objectName string) (*gcp.ObjectAttrs, error)
+		DeleteObject(ctx context.Context, objectName string) error
 	}
 )
 
@@ -71,10 +73,23 @@ func (g *firebaseStorage) Upload(ctx context.Context, filetPath, objectName stri
 	return writeBucket.Name, nil
 }
 
+// TODO: Remove ambigous method
 func (g *firebaseStorage) GetObjectAttribute(ctx context.Context, objectName string) (*gcp.ObjectAttrs, error) {
 	obj, err := g.bucket.Object(objectName).Attrs(ctx)
 	if err != nil {
 		return nil, err
 	}
 	return obj, nil
+}
+
+func (g *firebaseStorage) GetObject(ctx context.Context, objectName string) (*gcp.ObjectAttrs, error) {
+	obj, err := g.bucket.Object(objectName).Attrs(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return obj, nil
+}
+
+func (g *firebaseStorage) DeleteObject(ctx context.Context, objectName string) error {
+	return g.bucket.Object(objectName).Delete(ctx)
 }
