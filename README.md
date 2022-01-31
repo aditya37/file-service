@@ -54,7 +54,7 @@ Base Url = http://127.0.0.1:<servie_port>
 | {Base Url}/file/{object_name}  | GET     | object/file name  |Get detail object by object name|
 | {Base Url}/file/{object_name}  | DELETE  | object/file name  |Remove or Delete object from cloud storage|
 | {Base Url}/file/upload/        | POST    |Payload bisa di lihat di bawah|Upload or add file to cloud storage|
-| {Base Url}/files/page=0&itemPerPage=?| GET | menampilkan semua file yg sudah di upload|
+| {Base Url}/files?page=0&itemPerPage=?| GET | menampilkan semua file yg sudah di upload|
 
 ## Payload Upload
 Request Body : form/data (postman), jika di hit dari frontend (web,mobile) menggunakan multipart/form-data:
